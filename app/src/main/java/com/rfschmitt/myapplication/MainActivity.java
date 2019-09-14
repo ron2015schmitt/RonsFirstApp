@@ -20,11 +20,24 @@ public class MainActivity extends AppCompatActivity {
         String mydate;
 
         Calendar c = Calendar.getInstance();
-        SimpleDateFormat dateformat1 = new SimpleDateFormat("dd-MMM-yyyy hh:mm:ss aa");
         SimpleDateFormat dayOfWeekFormat = new SimpleDateFormat("EEE");
-        String datetime1 = dateformat1.format(c.getTime());
         String dayOfWeek = dayOfWeekFormat.format(c.getTime()).toUpperCase();
         TextView dayOfWeekTV = (TextView) findViewById(R.id.dayOfWeek);
         dayOfWeekTV.setText(dayOfWeek);
+
+        SimpleDateFormat dayAndMonthFormat = new SimpleDateFormat("MMM dd");
+        String dayAndMonth = dayAndMonthFormat.format(c.getTime());
+        TextView dayAndMonthTV = (TextView) findViewById(R.id.dayAndMonth);
+        dayAndMonthTV.setText(dayAndMonth);
+
+        String currentTemp = "71";
+        TextView temperatureTV = (TextView) findViewById(R.id.temperature);
+        temperatureTV.setText(currentTemp);
+
+        String temperatureDot = "o";
+        TextView temperatureDotTV = (TextView) findViewById(R.id.temperatureDot);
+        temperatureDotTV.setText(temperatureDot);
+
+
     }
 }
