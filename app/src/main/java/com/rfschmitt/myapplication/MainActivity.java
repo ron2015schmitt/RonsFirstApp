@@ -47,12 +47,12 @@ public class MainActivity extends AppCompatActivity {
         TextView locationTV = findViewById(R.id.location);
         locationTV.setText(location);
 
-        String conditions = "Sunny";
+        String conditions = "Partly Sunny";
         TextView conditionsTV = findViewById(R.id.conditions);
         conditionsTV.setText(conditions);
 
         ImageView nowImage = findViewById(R.id.imageNow);
-        nowImage.setImageResource(R.drawable.ic_sunny);
+        nowImage.setImageResource(R.drawable.ic_partlysunny);
     }
 
 }
