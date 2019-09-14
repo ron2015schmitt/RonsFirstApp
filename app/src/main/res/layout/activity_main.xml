@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/weatherapp"
+    android:background="@drawable/ic_weatherapp"
 
     tools:context=".MainActivity">
 
@@ -32,7 +32,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
 
-        android:layout_marginBottom="56dp"
+        android:layout_marginBottom="66dp"
         android:fontFamily="@font/biryani"
         android:gravity="bottom|center_horizontal"
         android:text="DAY"
@@ -56,15 +56,15 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.27"
-        app:srcCompat="@drawable/ic_partlysunny" />
+        app:layout_constraintVertical_bias="0.3"
+        app:srcCompat="@drawable/ic_rain" />
 
 
     <TextView
         android:id="@+id/dayAndMonth"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="66dp"
+        android:layout_marginTop="68dp"
         android:fontFamily="@font/biryani"
         android:gravity="center|top"
         android:text="JAN 00"
@@ -94,7 +94,7 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.27"
+        app:layout_constraintVertical_bias="0.3"
 
         />
 

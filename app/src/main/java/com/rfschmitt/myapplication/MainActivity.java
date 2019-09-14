@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
         TextView dayAndMonthTV = findViewById(R.id.dayAndMonth);
         dayAndMonthTV.setText(dayAndMonth);
 
-        String currentTemp = "71";
+        String currentTemp = "102";
         TextView temperatureTV = findViewById(R.id.temperature);
         temperatureTV.setText(currentTemp);
 
@@ -47,12 +47,12 @@ public class MainActivity extends AppCompatActivity {
         TextView locationTV = findViewById(R.id.location);
         locationTV.setText(location);
 
-        String conditions = "Partly Sunny";
+        String conditions = "Clear";
         TextView conditionsTV = findViewById(R.id.conditions);
         conditionsTV.setText(conditions);
 
         ImageView nowImage = findViewById(R.id.imageNow);
-        nowImage.setImageResource(R.drawable.ic_partlysunny);
+        nowImage.setImageResource(R.drawable.ic_moonwithclouds);
     }
 
 }
