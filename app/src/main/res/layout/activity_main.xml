@@ -106,7 +106,7 @@
         android:layout_marginTop="125dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_sunny" />
+        app:srcCompat="@drawable/ic_partlysunny" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

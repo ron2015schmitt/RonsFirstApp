@@ -2,13 +2,14 @@ package com.rfschmitt.myapplication;
 
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-
+import	android.graphics.drawable.Drawable;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -50,6 +51,8 @@ public class MainActivity extends AppCompatActivity {
         TextView conditionsTV = findViewById(R.id.conditions);
         conditionsTV.setText(conditions);
 
+        ImageView nowImage = findViewById(R.id.imageNow);
+        nowImage.setImageResource(R.drawable.ic_sunny);
     }
 
 }
