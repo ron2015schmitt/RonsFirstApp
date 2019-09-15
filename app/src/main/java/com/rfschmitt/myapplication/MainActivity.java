@@ -63,27 +63,24 @@ public class MainActivity extends AppCompatActivity {
         if (ContextCompat.checkSelfPermission(MainActivity.this,
                 Manifest.permission.ACCESS_COARSE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
-            Log.println(Log.INFO,"MainActivity","pos1");
+            Log.println(Log.INFO,"MainActivity","No permission at this point");
             // Permission is not granted
             // Should we show an explanation?
             if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this,
                     Manifest.permission.ACCESS_COARSE_LOCATION)) {
-                Log.println(Log.INFO,"MainActivity","pos2");
+                Log.println(Log.INFO,"MainActivity"," Show an explanation to the user");
                 // Show an explanation to the user *asynchronously* -- don't block
                 // this thread waiting for the user's response! After the user
                 // sees the explanation, try again to request the permission.
             } else {
                 // No explanation needed; request the permission
-                Log.println(Log.INFO,"MainActivity","pos3");
+                Log.println(Log.INFO,"MainActivity","No explanation needed; request the permission");
 
                 ActivityCompat.requestPermissions(MainActivity.this,
                         new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
                         MY_PERMISSIONS_REQUEST_LOCATION);
 
-                // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
-                // app-defined int constant. The callback method gets the
-                // result of the request.
-            }
+           }
         } else {
             // Permission has already been granted
             Log.println(Log.INFO,"MainActivity","Permission has already been granted");
