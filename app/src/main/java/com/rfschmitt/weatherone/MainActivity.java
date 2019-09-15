@@ -1,4 +1,4 @@
-package com.rfschmitt.myapplication;
+package com.rfschmitt.weatherone;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -22,8 +22,6 @@ import androidx.core.app.ActivityCompat;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-
-import android.widget.Toast;
 
 import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
 
@@ -59,7 +57,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         TextView dayAndMonthTV = findViewById(R.id.dayAndMonth);
         dayAndMonthTV.setText(dayAndMonth);
 
-        String currentTemp = "102";
+        String currentTemp = "75";
         TextView temperatureTV = findViewById(R.id.temperature);
         temperatureTV.setText(currentTemp);
 
@@ -139,6 +137,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         }
     }
 
+        @SuppressLint("MissingPermission")
         protected void getLocation() {
             if (!isLocationPermitted()) {
                 requestPermissionsFromUser();
@@ -149,8 +148,16 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                 bestProvider = String.valueOf(locationManager.getBestProvider(criteria, true)).toString();
 
                 // permissions and GPS checked in isLocationEnabled
-                @SuppressLint("MissingPermission") Location newLocation = locationManager.getLastKnownLocation(bestProvider);
-                this.location = newLocation;
+                Location newLocation = null;
+
+                try {
+
+                    newLocation = locationManager.getLastKnownLocation(bestProvider);
+                } catch (Exception e){
+
+                }
+
+                 this.location = newLocation;
                 setDisplayedLocation();
                 if (location != null) {
                     Log.println(Log.INFO, "GPS", "is ON");

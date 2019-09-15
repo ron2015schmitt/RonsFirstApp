@@ -1,4 +1,4 @@
-package com.rfschmitt.myapplication;
+package com.rfschmitt.weatherone;
 
 /**
  * Copyright 2017 Google Inc. All Rights Reserved.
@@ -91,7 +91,22 @@ class Utils {
                     String zipcode = address.getPostalCode();
                     String state = address.getAdminArea();
                     String stateAbreviation = getStateAbbreviation(address);
-                    return localityString +", "+stateAbreviation;
+
+                    Log.println(Log.INFO, "GPS", "localityString="+localityString);
+                    Log.println(Log.INFO, "GPS", "name="+name);
+                    Log.println(Log.INFO, "GPS", "subLocality="+subLocality);
+                    Log.println(Log.INFO, "GPS", "country="+country);
+                    Log.println(Log.INFO, "GPS", "region_code="+region_code);
+                    Log.println(Log.INFO, "GPS", "zipcode="+zipcode);
+                    Log.println(Log.INFO, "GPS", "state="+state);
+                    Log.println(Log.INFO, "GPS", "stateAbreviation="+stateAbreviation);
+                    String s;
+                    if (subLocality != null) {
+                        s = subLocality;
+                    } else {
+                        s = localityString;
+                    }
+                    return s +", "+stateAbreviation;
                 }
             } else {
 
