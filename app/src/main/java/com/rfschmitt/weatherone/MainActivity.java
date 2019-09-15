@@ -44,6 +44,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     public enum Conditions {
         UNKNOWN(" "),
         SUNNY("Sunny"),
+        CLEARNIGHT("Clear"),
+        PARTLYCLOUDYNIGHT("Partly Cloudy"),
         PARTLYSUNNY("Partly Sunny"),
         CLOUDY("Cloudy"),
         RAINY("Rain"),
@@ -51,8 +53,10 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         THUNDERSTORM("Thunderstorm"),
         WINDY("Wind");
 
-        public final String label;
-
+        private final String label;
+        public String toString(){
+            return label;
+        }
         private Conditions(String label) {
             this.label = label;
         }
@@ -60,7 +64,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
     public static class CurrentConditionsAndTemp {
         static Integer tempF = null;
-        static Conditions conditions = Conditions.UNKNOWN;
+        static Conditions conditions = Conditions.CLEARNIGHT;
     }
 
 
@@ -74,6 +78,9 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
         context = getApplicationContext();
 
+        // TODO: remove these
+        CurrentConditionsAndTemp.tempF = 77;
+        CurrentConditionsAndTemp.conditions = Conditions.CLEARNIGHT;
 
         setInfoUpdating();
         setDisplayedLocation();
@@ -319,11 +326,17 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
             case SUNNY:
                 nowImage.setImageResource(R.drawable.ic_sunny);
                 break;
+            case CLEARNIGHT:
+                nowImage.setImageResource(R.drawable.ic_moon);
+                break;
+            case PARTLYCLOUDYNIGHT:
+                nowImage.setImageResource(R.drawable.ic_moonwithclouds);
+                break;
             case PARTLYSUNNY:
                 nowImage.setImageResource(R.drawable.ic_partlysunny);
                 break;
             case CLOUDY:
-                //nowImage.setImageResource(R.drawable.ic_cloudy);
+                nowImage.setImageResource(R.drawable.ic_clouds);
                 break;
             case RAINY:
                 nowImage.setImageResource(R.drawable.ic_rain);
