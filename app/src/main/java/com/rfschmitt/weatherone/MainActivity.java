@@ -186,8 +186,9 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
         public void setDisplayedLocation() {
             TextView locationTV = findViewById(R.id.location);
+            //TODO: place error/info messages in a separate TextView
             if (!isLocationPermitted()) {
-                locationTV.setText("User permissions were not granted for location services");
+                locationTV.setText("Need user permission for location services");
                 return;
             }
             if (location == null) {
