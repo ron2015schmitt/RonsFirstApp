@@ -82,7 +82,7 @@ class Utils {
                 StringBuilder stringBuilder = new StringBuilder();
                 if (addresses.size()>0) {
                     Address address = addresses.get(0);
-
+                    String coords = getLocationCoordsText(location);
                     String localityString = address.getLocality();
                     String name = address.getFeatureName();
                     String subLocality = address.getSubLocality();
@@ -92,6 +92,7 @@ class Utils {
                     String state = address.getAdminArea();
                     String stateAbreviation = getStateAbbreviation(address);
 
+                    Log.println(Log.INFO, "GPS", "coords="+coords);
                     Log.println(Log.INFO, "GPS", "localityString="+localityString);
                     Log.println(Log.INFO, "GPS", "name="+name);
                     Log.println(Log.INFO, "GPS", "subLocality="+subLocality);

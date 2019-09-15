@@ -99,12 +99,12 @@
         />
 
     <TextView
-        android:id="@+id/temperatureDot"
+        android:id="@+id/temperatureUnits"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="75dp"
         android:fontFamily="@font/biryani_extrabold"
-        android:text="o"
+        android:text="°F"
         android:textAlignment="textStart"
         android:textAppearance="@style/TextAppearance.AppCompat.Display2"
         android:textColor="#FFFFFF"

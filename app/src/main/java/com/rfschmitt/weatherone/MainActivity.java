@@ -31,12 +31,39 @@ import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
 public class MainActivity extends AppCompatActivity implements LocationListener {
 
     private static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
+    private static final String TAG = "MainActivity";
 
-    LocationManager locationManager;
-    Criteria criteria;
-    Context context;
-    String bestProvider;
-    Location location = null;
+
+
+    private LocationManager locationManager;
+    private Criteria criteria;
+    private Context context;
+    private String bestProvider;
+    private Location location = null;
+
+    public enum Conditions {
+        UNKNOWN(" "),
+        SUNNY("Sunny"),
+        PARTLYSUNNY("Partly Sunny"),
+        CLOUDY("Cloudy"),
+        RAINY("Rain"),
+        SNOW("Snow"),
+        THUNDERSTORM("Thunderstorm"),
+        WINDY("Wind");
+
+        public final String label;
+
+        private Conditions(String label) {
+            this.label = label;
+        }
+    }
+
+    public static class CurrentConditionsAndTemp {
+        static Integer tempF = null;
+        static Conditions conditions = Conditions.UNKNOWN;
+    }
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +74,20 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
         context = getApplicationContext();
 
+
+        setInfoUpdating();
+        setDisplayedLocation();
+        setDayAndDate();
+        getLocation();
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        setContentView(R.layout.activity_main);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         setInfoUpdating();
         setDayAndDate();
@@ -135,12 +176,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
             setAllDisplayed();
             if (location != null) {
                 Log.println(Log.INFO, "GPS", "is ON");
-            } else {
-                // TODO:
-                //locationManager.requestLocationUpdates(bestProvider, 1000, 0, this);
+                locationManager.requestLocationUpdates(bestProvider, 60000, 0, this);
             }
-        } else {
-
         }
     }
 
@@ -148,41 +185,12 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     public void onLocationChanged(Location location) {
         //remove location callback:
 //        locationManager.removeUpdates(this);
-
-        //open the map:
+        int permission_denied = Log.println(Log.INFO, TAG, "Location Changed");
         this.location = location;
         setAllDisplayed();
 
-
     }
 
-    public void setAllDisplayed() {
-        setDisplayedLocation();
-        setDayAndDate();
-        setInfoUpdateTime();
-        setCurrentConditions();
-    }
-
-    public void setDisplayedLocation() {
-        TextView locationTV = findViewById(R.id.location);
-        TextView infoTV = findViewById(R.id.info);
-        //TODO: place error/info messages in a separate TextView
-        if (!isLocationPermitted()) {
-            infoTV.setText("Need permission for location services");
-            return;
-        }
-        if (location == null) {
-            infoTV.setText("Location (GPS) services unavailable");
-            return;
-        }
-
-        double latitude = location.getLatitude();
-        double longitude = location.getLatitude();
-        //Toast.makeText(MainActivity.this, "latitude:" + latitude + " longitude:" + longitude, Toast.LENGTH_SHORT).show();
-        String locationString = Utils.getLocationText(location, context);
-        Log.println(Log.INFO, "GPS", "location=" + locationString);
-        locationTV.setText(locationString);
-    }
     @Override
     public void onStatusChanged(String provider, int status, Bundle extras) {
 
@@ -227,6 +235,50 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
     }
 
+    //----------------------------------------------------------------
+    // forecast related
+    //----------------------------------------------------------------
+
+    private void getForecast() {
+    }
+
+
+
+    //----------------------------------------------------------------
+    // UI  update methods
+    //----------------------------------------------------------------
+
+    public void setAllDisplayed() {
+        setDisplayedLocation();
+        setDayAndDate();
+        setInfoUpdateTime();
+        setCurrentConditions();
+    }
+
+    public void setDisplayedLocation() {
+        TextView locationTV = findViewById(R.id.location);
+        TextView infoTV = findViewById(R.id.info);
+        if(location == null) {
+            locationTV.setText("—");
+        } else {
+            double latitude = location.getLatitude();
+            double longitude = location.getLatitude();
+            //Toast.makeText(MainActivity.this, "latitude:" + latitude + " longitude:" + longitude, Toast.LENGTH_SHORT).show();
+            String locationString = Utils.getLocationText(location, context);
+            Log.println(Log.INFO, "GPS", "location=" + locationString);
+            locationTV.setText(locationString);
+        }
+
+        if (!isLocationPermitted()) {
+            infoTV.setText("Need permission for location services");
+            return;
+        }
+        if (!isLocationEnabled(context)) {
+            infoTV.setText("Location (GPS) services unavailable");
+            return;
+        }
+
+    }
 
     void setDayAndDate() {
         Calendar c = Calendar.getInstance();
@@ -244,17 +296,50 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
 
     void setCurrentConditions() {
-        String currentTemp = "75";
+        String currentTemp =  "";
+        if (CurrentConditionsAndTemp.tempF !=null) {
+            currentTemp = Integer.toString(CurrentConditionsAndTemp.tempF);
+        }
         TextView temperatureTV = findViewById(R.id.temperature);
         temperatureTV.setText(currentTemp);
 
-        // add an extra space since italics otherwise get cut off
-        String conditions = "Clear ";
+        String conditions = "";
+        if (CurrentConditionsAndTemp.conditions != Conditions.UNKNOWN) {
+            conditions = CurrentConditionsAndTemp.conditions.toString();
+        }
         TextView conditionsTV = findViewById(R.id.conditions);
         conditionsTV.setText(conditions);
 
         ImageView nowImage = findViewById(R.id.imageNow);
-        nowImage.setImageResource(R.drawable.ic_moonwithclouds);
+
+        switch (CurrentConditionsAndTemp.conditions) {
+            case UNKNOWN:
+                nowImage.setImageResource(R.drawable.ic_hourglass);
+                break;
+            case SUNNY:
+                nowImage.setImageResource(R.drawable.ic_sunny);
+                break;
+            case PARTLYSUNNY:
+                nowImage.setImageResource(R.drawable.ic_partlysunny);
+                break;
+            case CLOUDY:
+                //nowImage.setImageResource(R.drawable.ic_cloudy);
+                break;
+            case RAINY:
+                nowImage.setImageResource(R.drawable.ic_rain);
+                break;
+            case SNOW:
+                nowImage.setImageResource(R.drawable.ic_snow);
+                break;
+            case THUNDERSTORM:
+                nowImage.setImageResource(R.drawable.ic_thunderstorm);
+                break;
+            case WINDY:
+                nowImage.setImageResource(R.drawable.ic_wind);
+                break;
+        }
+
+
 
     }
 
@@ -279,5 +364,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     public void refreshAll(View view) {
         setInfoUpdating();
         getLocation();
+        getForecast();
     }
 }
