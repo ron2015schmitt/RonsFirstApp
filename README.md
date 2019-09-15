@@ -1,2 +1,2 @@
-# RonsFirstApp
-First Android App
+# WeatherOne App for Android
+
