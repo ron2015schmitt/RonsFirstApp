@@ -13,6 +13,8 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -46,39 +48,12 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         context = getApplicationContext();
 
 
-        Calendar c = Calendar.getInstance();
-        SimpleDateFormat dayOfWeekFormat = new SimpleDateFormat("EEE");
-        String dayOfWeek = dayOfWeekFormat.format(c.getTime()).toUpperCase();
-        TextView dayOfWeekTV = findViewById(R.id.dayOfWeek);
-        dayOfWeekTV.setText(dayOfWeek);
-
-        SimpleDateFormat dayAndMonthFormat = new SimpleDateFormat("MMM dd");
-        String dayAndMonth = dayAndMonthFormat.format(c.getTime());
-        TextView dayAndMonthTV = findViewById(R.id.dayAndMonth);
-        dayAndMonthTV.setText(dayAndMonth);
-
-        String currentTemp = "75";
-        TextView temperatureTV = findViewById(R.id.temperature);
-        temperatureTV.setText(currentTemp);
-
-        String temperatureDot = "o";
-        TextView temperatureDotTV = findViewById(R.id.temperatureDot);
-        temperatureDotTV.setText(temperatureDot);
-
-        String locationString = "Silver Spring, MD";
-        TextView locationTV = findViewById(R.id.location);
-        locationTV.setText(locationString);
-
-        String conditions = "Clear";
-        TextView conditionsTV = findViewById(R.id.conditions);
-        conditionsTV.setText(conditions);
-
-        ImageView nowImage = findViewById(R.id.imageNow);
-        nowImage.setImageResource(R.drawable.ic_moonwithclouds);
-
+        setInfoUpdating();
+        setDayAndDate();
         getLocation();
 
     }
+
 
     public void requestPermissionsFromUser() {
         // Here, thisActivity is the current activity
@@ -127,7 +102,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                 } else {
                     Log.println(Log.INFO, "MainActivity", "Permission denied");
                     // permission denied, boo! Disable the
-                    setDisplayedLocation();
+                    setAllDisplayed();
                     return;
                 }
 
@@ -137,115 +112,172 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         }
     }
 
-        @SuppressLint("MissingPermission")
-        protected void getLocation() {
-            if (!isLocationPermitted()) {
-                requestPermissionsFromUser();
-            }
-            if (isLocationEnabled(context)) {
-                locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-                criteria = new Criteria();
-                bestProvider = String.valueOf(locationManager.getBestProvider(criteria, true)).toString();
+    @SuppressLint("MissingPermission")
+    protected void getLocation() {
+        if (!isLocationPermitted()) {
+            requestPermissionsFromUser();
+        }
+        if (isLocationEnabled(context)) {
+            locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+            criteria = new Criteria();
+            bestProvider = String.valueOf(locationManager.getBestProvider(criteria, true)).toString();
 
-                // permissions and GPS checked in isLocationEnabled
-                Location newLocation = null;
+            // permissions and GPS checked in isLocationEnabled
+            Location newLocation = null;
 
-                try {
-
-                    newLocation = locationManager.getLastKnownLocation(bestProvider);
-                } catch (Exception e){
-
-                }
-
-                 this.location = newLocation;
-                setDisplayedLocation();
-                if (location != null) {
-                    Log.println(Log.INFO, "GPS", "is ON");
-                }
-                else{
-                    // TODO:
-                    //locationManager.requestLocationUpdates(bestProvider, 1000, 0, this);
-                }
-            }
-            else {
+            try {
+                newLocation = locationManager.getLastKnownLocation(bestProvider);
+            } catch (Exception e) {
 
             }
-        }
 
-        @Override
-        public void onLocationChanged(Location location) {
-            //remove location callback:
-//        locationManager.removeUpdates(this);
-
-            //open the map:
-            this.location = location;
-            setDisplayedLocation();
-
-
-        }
-
-        public void setDisplayedLocation() {
-            TextView locationTV = findViewById(R.id.location);
-            //TODO: place error/info messages in a separate TextView
-            if (!isLocationPermitted()) {
-                locationTV.setText("Need user permission for location services");
-                return;
+            this.location = newLocation;
+            setAllDisplayed();
+            if (location != null) {
+                Log.println(Log.INFO, "GPS", "is ON");
+            } else {
+                // TODO:
+                //locationManager.requestLocationUpdates(bestProvider, 1000, 0, this);
             }
-            if (location == null) {
-                locationTV.setText("Location (GPS) services unavailable");
-                return;
-            }
-
-            double latitude = location.getLatitude();
-            double longitude = location.getLatitude();
-            //Toast.makeText(MainActivity.this, "latitude:" + latitude + " longitude:" + longitude, Toast.LENGTH_SHORT).show();
-            String locationString = Utils.getLocationText(location, context);
-            Log.println(Log.INFO, "GPS", "location="+locationString);
-            locationTV.setText(locationString);
-        }
-
-
-        @Override
-        public void onStatusChanged(String provider, int status, Bundle extras) {
-
-        }
-
-        @Override
-        public void onProviderEnabled(String provider) {
-
-        }
-
-        @Override
-        public void onProviderDisabled(String provider) {
-
-        }
-
-        public boolean isLocationPermitted() {
-            return (ContextCompat.checkSelfPermission(MainActivity.this, ACCESS_COARSE_LOCATION)
-                    == PackageManager.PERMISSION_GRANTED);
-        }
-
-
-        public boolean isLocationEnabled(Context context) {
-            int locationMode = 0;
-            String locationProviders;
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT){
-                try {
-                    locationMode = Settings.Secure.getInt(context.getContentResolver(), Settings.Secure.LOCATION_MODE);
-
-                } catch (Settings.SettingNotFoundException e) {
-                    e.printStackTrace();
-                    return false;
-                }
-
-                return locationMode != Settings.Secure.LOCATION_MODE_OFF;
-
-            }else{
-                locationProviders = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.LOCATION_PROVIDERS_ALLOWED);
-                return !TextUtils.isEmpty(locationProviders);
-            }
-
+        } else {
 
         }
     }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        //remove location callback:
+//        locationManager.removeUpdates(this);
+
+        //open the map:
+        this.location = location;
+        setAllDisplayed();
+
+
+    }
+
+    public void setAllDisplayed() {
+        setDisplayedLocation();
+        setDayAndDate();
+        setInfoUpdateTime();
+        setCurrentConditions();
+    }
+
+    public void setDisplayedLocation() {
+        TextView locationTV = findViewById(R.id.location);
+        TextView infoTV = findViewById(R.id.info);
+        //TODO: place error/info messages in a separate TextView
+        if (!isLocationPermitted()) {
+            infoTV.setText("Need permission for location services");
+            return;
+        }
+        if (location == null) {
+            infoTV.setText("Location (GPS) services unavailable");
+            return;
+        }
+
+        double latitude = location.getLatitude();
+        double longitude = location.getLatitude();
+        //Toast.makeText(MainActivity.this, "latitude:" + latitude + " longitude:" + longitude, Toast.LENGTH_SHORT).show();
+        String locationString = Utils.getLocationText(location, context);
+        Log.println(Log.INFO, "GPS", "location=" + locationString);
+        locationTV.setText(locationString);
+    }
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+
+    }
+
+    @Override
+    public void onProviderEnabled(String provider) {
+
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
+
+    }
+
+    public boolean isLocationPermitted() {
+        return (ContextCompat.checkSelfPermission(MainActivity.this, ACCESS_COARSE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED);
+    }
+
+
+    public boolean isLocationEnabled(Context context) {
+        int locationMode = 0;
+        String locationProviders;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            try {
+                locationMode = Settings.Secure.getInt(context.getContentResolver(), Settings.Secure.LOCATION_MODE);
+
+            } catch (Settings.SettingNotFoundException e) {
+                e.printStackTrace();
+                return false;
+            }
+
+            return locationMode != Settings.Secure.LOCATION_MODE_OFF;
+
+        } else {
+            locationProviders = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.LOCATION_PROVIDERS_ALLOWED);
+            return !TextUtils.isEmpty(locationProviders);
+        }
+
+
+    }
+
+
+    void setDayAndDate() {
+        Calendar c = Calendar.getInstance();
+        SimpleDateFormat dayOfWeekFormat = new SimpleDateFormat("EEE");
+        String dayOfWeek = dayOfWeekFormat.format(c.getTime()).toUpperCase();
+        TextView dayOfWeekTV = findViewById(R.id.dayOfWeek);
+        dayOfWeekTV.setText(dayOfWeek);
+
+        SimpleDateFormat dayAndMonthFormat = new SimpleDateFormat("MMM dd");
+        String dayAndMonth = dayAndMonthFormat.format(c.getTime());
+        TextView dayAndMonthTV = findViewById(R.id.dayAndMonth);
+        dayAndMonthTV.setText(dayAndMonth);
+
+    }
+
+
+    void setCurrentConditions() {
+        String currentTemp = "75";
+        TextView temperatureTV = findViewById(R.id.temperature);
+        temperatureTV.setText(currentTemp);
+
+        // add an extra space since italics otherwise get cut off
+        String conditions = "Clear ";
+        TextView conditionsTV = findViewById(R.id.conditions);
+        conditionsTV.setText(conditions);
+
+        ImageView nowImage = findViewById(R.id.imageNow);
+        nowImage.setImageResource(R.drawable.ic_moonwithclouds);
+
+    }
+
+
+    void setInfoUpdateTime() {
+        Calendar c = Calendar.getInstance();
+        // add an extra space since italics otherwise get cut off
+        SimpleDateFormat dayAndMonthFormat = new SimpleDateFormat("h:mma MMM dd z ");
+        String updateString = "Last updated at ";
+        updateString +=dayAndMonthFormat.format(c.getTime());
+        TextView infoTV = findViewById(R.id.info);
+        infoTV.setText(updateString);
+    }
+
+
+    private void setInfoUpdating() {
+        TextView infoTV = findViewById(R.id.info);
+        infoTV.setText("Updating...");
+    }
+
+
+    public void refreshAll(View view) {
+        setInfoUpdating();
+        getLocation();
+    }
+}
