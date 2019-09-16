@@ -94,7 +94,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         super.onResume();
 
         setContentView(R.layout.activity_main);
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
 
         setInfoUpdating();
         setDayAndDate();

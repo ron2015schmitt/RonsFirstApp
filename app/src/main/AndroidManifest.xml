@@ -3,7 +3,7 @@
     package="com.rfschmitt.weatherone">
 
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-    <uses-permission android:name="android.permission.INTERNET"/>
+
 
     <application
         android:allowBackup="true"
