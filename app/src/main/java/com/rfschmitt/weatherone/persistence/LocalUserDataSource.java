@@ -16,15 +16,19 @@
 
 package com.rfschmitt.weatherone.persistence;
 
+import android.util.Log;
+
 import com.rfschmitt.weatherone.UserDataSource;
 
 import io.reactivex.Completable;
 import io.reactivex.Flowable;
 
+
 /**
  * Using the Room database as a data source.
  */
 public class LocalUserDataSource implements UserDataSource {
+    private static final String TAG = LocalUserDataSource.class.getSimpleName();
 
     private final UserDao mUserDao;
 
@@ -34,12 +38,16 @@ public class LocalUserDataSource implements UserDataSource {
 
     @Override
     public Flowable<User> getUser() {
+        Log.println(Log.INFO, TAG, "getUser mUserDao.getUser()="+mUserDao.getUser());
+
         return mUserDao.getUser();
     }
 
     @Override
     public Completable insertOrUpdateUser(User user) {
-       return mUserDao.insertUser(user);
+        Log.println(Log.INFO, TAG, "insertOrUpdateUser user.getUserName()="+user.getUserName());
+
+        return mUserDao.insertUser(user);
     }
 
     @Override

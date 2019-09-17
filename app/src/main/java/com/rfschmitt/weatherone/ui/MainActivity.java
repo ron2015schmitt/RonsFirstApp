@@ -38,6 +38,9 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 
 
+
+
+
 public class MainActivity extends AppCompatActivity implements LocationListener {
 
     private static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
@@ -109,8 +112,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         mUserNameInput = findViewById(R.id.user_name_input);
         mGoButton = findViewById(R.id.goButton);
 
-
-
         mGoButton.setOnClickListener(v -> updateUserName());
         mGoButton.setEnabled(true);
 
@@ -123,6 +124,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         setDisplayedDayAndDate();
         getLocation();
 
+        mUserName.setText("joe");
 
     }
 
@@ -134,6 +136,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         // Subscribe to the emissions of the user name from the view model.
         // Update the user name text view, at every onNext emission.
         // In case of error, log the exception.
+        Log.println(Log.INFO, TAG, "onStart()");
+
         mDisposable.add(mViewModel.getUserName()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -161,7 +165,9 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     }
 
 
-
+    //------------------------------------------------------
+    //  permissions
+    //------------------------------------------------------
 
 
     public void requestPermissionsFromUser() {
@@ -169,18 +175,18 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         if (ContextCompat.checkSelfPermission(MainActivity.this,
                 ACCESS_COARSE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
-            Log.println(Log.INFO, "MainActivity", "No permission at this point");
+            Log.println(Log.INFO, TAG, "No permission at this point");
             // Permission is not granted
             // Should we show an explanation?
             if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this,
                     ACCESS_COARSE_LOCATION)) {
-                Log.println(Log.INFO, "MainActivity", " Show an explanation to the user");
+                Log.println(Log.INFO, TAG, " Show an explanation to the user");
                 // Show an explanation to the user *asynchronously* -- don't block
                 // this thread waiting for the user's response! After the user
                 // sees the explanation, try again to request the permission.
             } else {
                 // No explanation needed; request the permission
-                Log.println(Log.INFO, "MainActivity", "No explanation needed; request the permission");
+                Log.println(Log.INFO, TAG, "No explanation needed; request the permission");
 
                 ActivityCompat.requestPermissions(MainActivity.this,
                         new String[]{ACCESS_COARSE_LOCATION},
@@ -189,7 +195,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
             }
         } else {
             // Permission has already been granted
-            Log.println(Log.INFO, "MainActivity", "Location Permission has already been granted");
+            Log.println(Log.INFO, TAG, "Location Permission has already been granted");
         }
 
     }

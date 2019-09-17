@@ -16,6 +16,8 @@
 
 package com.rfschmitt.weatherone.ui;
 
+import android.util.Log;
+
 import androidx.lifecycle.ViewModel;
 
 import com.rfschmitt.weatherone.UserDataSource;
@@ -29,6 +31,7 @@ import io.reactivex.Flowable;
  */
 public class UserViewModel extends ViewModel {
 
+    private static final String TAG = UserViewModel.class.getSimpleName();
     private final UserDataSource mDataSource;
 
     private User mUser;
@@ -62,9 +65,15 @@ public class UserViewModel extends ViewModel {
         // if there's no user, create a new user.
         // if we already have a user, then, since the user object is immutable,
         // create a new user, with the id of the previous user and the updated user name.
+        Log.println(Log.INFO, TAG, "updateUserName userName="+userName);
+
         mUser = mUser == null
                 ? new User(userName)
                 : new User(mUser.getId(), userName);
+        Log.println(Log.INFO, TAG,
+                "updateUserName mUser.getUserName()="+mUser.getUserName()
+                        +" mUser.getId()="+mUser.getId()
+        );
         return mDataSource.insertOrUpdateUser(mUser);
     }
 }
