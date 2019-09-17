@@ -35,7 +35,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-class Utils {
+public class Utils {
 
     static final String KEY_REQUESTING_LOCATION_UPDATES = "requesting_locaction_updates";
 
@@ -68,12 +68,12 @@ class Utils {
      * Returns the {@code location} object as a human readable string.
      * @param location  The {@link Location}.
      */
-    static String getLocationCoordsText(Location location) {
+    public static String getLocationCoordsText(Location location) {
         return location == null ? "Unknown location" :
                 "(" + String.format("%.2f", location.getLatitude()) + ", " + String.format("%.2f", location.getLongitude()) + ")";
     }
 
-    static String getLocationText(Location location, Context context) {
+    public static String getLocationText(Location location, Context context) {
         Geocoder geocoder = new Geocoder(context);
 
         try {
@@ -118,7 +118,7 @@ class Utils {
         return getLocationCoordsText(location);
     }
 
-    static public String getStateAbbreviation(Address address) {
+    static String getStateAbbreviation(Address address) {
 
         final String TAG = "getStateAbbreviation";
 

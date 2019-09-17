@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@drawable/ic_weatherapp"
 
-    tools:context=".MainActivity">
+    tools:context="com.rfschmitt.weatherone.ui.MainActivity">
 
 
     <TextView
@@ -106,6 +106,7 @@
         android:fontFamily="@font/biryani_semibold"
         android:text="°F"
         android:textAlignment="textStart"
+        android:layout_gravity="start"
         android:textAppearance="@style/TextAppearance.AppCompat.Display2"
         android:textColor="#FFFFFF"
         android:textSize="28sp"
@@ -143,6 +144,7 @@
         android:layout_height="wrap_content"
 
         android:layout_marginStart="5dp"
+        android:layout_marginLeft="5dp"
 
         android:ellipsize="end"
         android:fontFamily="sans-serif"
