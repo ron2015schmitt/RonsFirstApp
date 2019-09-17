@@ -15,28 +15,45 @@ import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.core.app.ActivityCompat;
+import androidx.lifecycle.ViewModelProvider;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 
+import com.rfschmitt.weatherone.Injection;
 import com.rfschmitt.weatherone.persistence.R;
 import com.rfschmitt.weatherone.Utils;
 
-
-
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.schedulers.Schedulers;
 
 
 public class MainActivity extends AppCompatActivity implements LocationListener {
 
     private static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
-    private static final String TAG = "MainActivity";
+    private static final String TAG = MainActivity.class.getSimpleName();
+
+    private ViewModelFactory mViewModelFactory;
+    private UserViewModel mViewModel;
+    private final CompositeDisposable mDisposable = new CompositeDisposable();
+
+    private ImageView mCurrentConditions;
+    private ImageView mUpdateButton;
+
+    // testing ROOM DB
+    private TextView mUserName;
+    private EditText mUserNameInput;
+    private Button mGoButton;
 
 
 
@@ -77,11 +94,25 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_main);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-
         context = getApplicationContext();
+
+        mViewModelFactory = Injection.provideViewModelFactory(this);
+        mViewModel = new ViewModelProvider(this, mViewModelFactory).get(UserViewModel.class);
+
+        mCurrentConditions = findViewById(R.id.imageCurrentConditions);
+        mUpdateButton = findViewById(R.id.updateDataButton);
+
+        // ROOM testing components
+        mUserName = findViewById(R.id.user_name);
+        mUserNameInput = findViewById(R.id.user_name_input);
+        mGoButton = findViewById(R.id.goButton);
+
+
+
+        mGoButton.setOnClickListener(v -> updateUserName());
+        mGoButton.setEnabled(true);
 
         // TODO: remove these
         CurrentConditionsAndTemp.tempF = 77;
@@ -89,23 +120,48 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
         setInfoUpdating();
         setDisplayedLocation();
-        setDayAndDate();
+        setDisplayedDayAndDate();
+        getLocation();
+
+
+    }
+
+
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        // Subscribe to the emissions of the user name from the view model.
+        // Update the user name text view, at every onNext emission.
+        // In case of error, log the exception.
+        mDisposable.add(mViewModel.getUserName()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(userName -> mUserName.setText(userName),
+                        throwable -> Log.e(TAG, "Unable to update username", throwable)));
+    }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        //careful what you put in this method
+        setInfoUpdating();
+        setDisplayedDayAndDate();
         getLocation();
 
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
+    protected void onStop() {
+        super.onStop();
 
-        setContentView(R.layout.activity_main);
-
-
-        setInfoUpdating();
-        setDayAndDate();
-        getLocation();
-
+        // clear all the subscriptions
+        mDisposable.clear();
     }
+
+
+
 
 
     public void requestPermissionsFromUser() {
@@ -155,7 +211,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                 } else {
                     Log.println(Log.INFO, "MainActivity", "Permission denied");
                     // permission denied, boo! Disable the
-                    setAllDisplayed();
+                    setAllDisplay();
                     return;
                 }
 
@@ -164,6 +220,11 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
             }
         }
     }
+
+
+    //------------------------------------------------------
+    //  LocationListener
+    //------------------------------------------------------
 
     @SuppressLint("MissingPermission")
     protected void getLocation() {
@@ -185,7 +246,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
             }
 
             this.location = newLocation;
-            setAllDisplayed();
+            setAllDisplay();
             if (location != null) {
                 Log.println(Log.INFO, "GPS", "is ON");
                 locationManager.requestLocationUpdates(bestProvider, 60000, 0, this);
@@ -199,7 +260,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 //        locationManager.removeUpdates(this);
         int permission_denied = Log.println(Log.INFO, TAG, "Location Changed");
         this.location = location;
-        setAllDisplayed();
+        setAllDisplay();
 
     }
 
@@ -217,6 +278,9 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     public void onProviderDisabled(String provider) {
 
     }
+
+
+
 
     public boolean isLocationPermitted() {
         return (ContextCompat.checkSelfPermission(MainActivity.this, ACCESS_COARSE_LOCATION)
@@ -260,11 +324,28 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     // UI  update methods
     //----------------------------------------------------------------
 
-    public void setAllDisplayed() {
+
+
+
+    public void updateUserName() {
+        String userName = mUserNameInput.getText().toString();
+        Log.println(Log.INFO,TAG, "Button click username="+userName);
+        // Disable the update button until the user name update has been done
+        mGoButton.setEnabled(false);
+        // Subscribe to updating the user name.
+        // Re-enable the button once the user name has been updated
+        mDisposable.add(mViewModel.updateUserName(userName)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(() -> mGoButton.setEnabled(true),
+                        throwable -> Log.e(TAG, "Unable to update username", throwable)));
+    }
+
+    public void setAllDisplay() {
         setDisplayedLocation();
-        setDayAndDate();
+        setDisplayedDayAndDate();
         setInfoUpdateTime();
-        setCurrentConditions();
+        setDisplayCurrentConditions();
     }
 
     public void setDisplayedLocation() {
@@ -292,7 +373,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
     }
 
-    void setDayAndDate() {
+    void setDisplayedDayAndDate() {
         Calendar c = Calendar.getInstance();
         SimpleDateFormat dayOfWeekFormat = new SimpleDateFormat("EEE");
         String dayOfWeek = dayOfWeekFormat.format(c.getTime()).toUpperCase();
@@ -307,7 +388,10 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     }
 
 
-    void setCurrentConditions() {
+    void setDisplayCurrentConditions() {
+
+
+
         String currentTemp =  "";
         if (CurrentConditionsAndTemp.tempF !=null) {
             currentTemp = Integer.toString(CurrentConditionsAndTemp.tempF);
@@ -322,38 +406,40 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         TextView conditionsTV = findViewById(R.id.conditions);
         conditionsTV.setText(conditions);
 
-        ImageView nowImage = findViewById(R.id.imageNow);
+
+        Log.println(Log.INFO, "MainActivity", "setDisplayCurrentConditions temp="+currentTemp+"  conditions="+conditions);
 
         switch (CurrentConditionsAndTemp.conditions) {
             case UNKNOWN:
-                nowImage.setImageResource(R.drawable.ic_hourglass);
+                mCurrentConditions.setImageResource(R.drawable.ic_hourglass);
                 break;
             case SUNNY:
-                nowImage.setImageResource(R.drawable.ic_sunny);
+                mCurrentConditions.setImageResource(R.drawable.ic_sunny);
                 break;
             case CLEARNIGHT:
-                nowImage.setImageResource(R.drawable.ic_moon);
+                Log.println(Log.INFO, "MainActivity", "case CLEARNIGHT");
+                mCurrentConditions.setImageResource(R.drawable.ic_moon);
                 break;
             case PARTLYCLOUDYNIGHT:
-                nowImage.setImageResource(R.drawable.ic_moonwithclouds);
+                mCurrentConditions.setImageResource(R.drawable.ic_moonwithclouds);
                 break;
             case PARTLYSUNNY:
-                nowImage.setImageResource(R.drawable.ic_partlysunny);
+                mCurrentConditions.setImageResource(R.drawable.ic_partlysunny);
                 break;
             case CLOUDY:
-                nowImage.setImageResource(R.drawable.ic_clouds);
+                mCurrentConditions.setImageResource(R.drawable.ic_clouds);
                 break;
             case RAINY:
-                nowImage.setImageResource(R.drawable.ic_rain);
+                mCurrentConditions.setImageResource(R.drawable.ic_rain);
                 break;
             case SNOW:
-                nowImage.setImageResource(R.drawable.ic_snow);
+                mCurrentConditions.setImageResource(R.drawable.ic_snow);
                 break;
             case THUNDERSTORM:
-                nowImage.setImageResource(R.drawable.ic_thunderstorm);
+                mCurrentConditions.setImageResource(R.drawable.ic_thunderstorm);
                 break;
             case WINDY:
-                nowImage.setImageResource(R.drawable.ic_wind);
+                mCurrentConditions.setImageResource(R.drawable.ic_wind);
                 break;
         }
 
@@ -380,6 +466,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
 
     public void refreshAll(View view) {
+        mGoButton.performClick();
         setInfoUpdating();
         getLocation();
         getForecast();

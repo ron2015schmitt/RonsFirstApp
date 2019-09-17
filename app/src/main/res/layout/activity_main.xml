@@ -41,12 +41,12 @@
         android:textColor="#FFFFFF"
         android:textSize="18sp"
         android:visibility="visible"
-        app:layout_constraintBottom_toBottomOf="@id/imageNow"
-        app:layout_constraintEnd_toEndOf="@+id/imageNow"
-        app:layout_constraintStart_toStartOf="@+id/imageNow" />
+        app:layout_constraintBottom_toBottomOf="@id/imageCurrentConditions"
+        app:layout_constraintEnd_toEndOf="@+id/imageCurrentConditions"
+        app:layout_constraintStart_toStartOf="@+id/imageCurrentConditions" />
 
     <ImageView
-        android:id="@+id/imageNow"
+        android:id="@+id/imageCurrentConditions"
         android:layout_width="80dp"
         android:layout_height="80dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -72,9 +72,9 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Display2"
         android:textColor="#FFFFFFFF"
         android:textSize="18sp"
-        app:layout_constraintEnd_toEndOf="@+id/imageNow"
-        app:layout_constraintStart_toStartOf="@+id/imageNow"
-        app:layout_constraintTop_toTopOf="@+id/imageNow" />
+        app:layout_constraintEnd_toEndOf="@+id/imageCurrentConditions"
+        app:layout_constraintStart_toStartOf="@+id/imageCurrentConditions"
+        app:layout_constraintTop_toTopOf="@+id/imageCurrentConditions" />
 
     <TextView
         android:id="@+id/temperature"
@@ -154,12 +154,12 @@
         android:textSize="18sp"
         android:textStyle="italic"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/imageReload"
+        app:layout_constraintStart_toEndOf="@+id/updateDataButton"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.97" />
 
     <ImageButton
-        android:id="@+id/imageReload"
+        android:id="@+id/updateDataButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@null"
@@ -180,14 +180,14 @@
         android:layout_height="wrap_content"
         android:background="#ffFFFFFF"
         android:textSize="24sp"
-        app:layout_constraintBottom_toTopOf="@+id/update_user"
+        app:layout_constraintBottom_toTopOf="@+id/goButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         tools:text="[input]"
     />
 
     <Button
-        android:id="@+id/update_user"
+        android:id="@+id/goButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
@@ -206,7 +206,7 @@
         android:background="#40000000"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/update_user"
+        app:layout_constraintTop_toBottomOf="@+id/goButton"
         tools:text="[DataBase Value]" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
