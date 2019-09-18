@@ -76,4 +76,18 @@ public class UserViewModel extends ViewModel {
         );
         return mDataSource.insertOrUpdateUser(mUser);
     }
+
+    /**
+     * Update the user name.
+     *
+     * @return a {@link Completable} that completes when the users are deeleted
+     */
+    public Completable deleteAllUsers() {
+        // if there's no user, create a new user.
+        // if we already have a user, then, since the user object is immutable,
+        // create a new user, with the id of the previous user and the updated user name.
+        Log.println(Log.INFO, TAG, "deleteAllUsers()");
+        return mDataSource.deleteAllUsers();
+
+    }
 }

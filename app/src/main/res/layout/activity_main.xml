@@ -180,14 +180,14 @@
         android:layout_height="wrap_content"
         android:background="#ffFFFFFF"
         android:textSize="24sp"
-        app:layout_constraintBottom_toTopOf="@+id/goButton"
+        app:layout_constraintBottom_toTopOf="@+id/setUserButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         tools:text="[input]"
     />
 
     <Button
-        android:id="@+id/goButton"
+        android:id="@+id/setUserButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
@@ -195,7 +195,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintVertical_bias="0.6"
-        android:text="GO"/>
+        android:text="Set User"/>
 
     <TextView
         android:id="@+id/user_name"
@@ -206,7 +206,19 @@
         android:background="#40000000"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/goButton"
+        app:layout_constraintTop_toBottomOf="@+id/setUserButton"
         tools:text="[DataBase Value]" />
+
+    <Button
+        android:id="@+id/deleteAllButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintVertical_bias="0.75"
+        android:text="Delete All Users"/>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

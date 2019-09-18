@@ -22,6 +22,7 @@ import com.rfschmitt.weatherone.UserDataSource;
 
 import io.reactivex.Completable;
 import io.reactivex.Flowable;
+import io.reactivex.functions.Action;
 
 
 /**
@@ -51,7 +52,13 @@ public class LocalUserDataSource implements UserDataSource {
     }
 
     @Override
-    public void deleteAllUsers() {
-        mUserDao.deleteAllUsers();
+    public Completable deleteAllUsers() {
+        Log.println(Log.INFO, TAG, "deleteAllUsers()");
+        return Completable.fromAction(new Action() {
+            @Override
+            public void run() throws Exception {
+                mUserDao.deleteAllUsers();
+            }
+        });
     }
 }

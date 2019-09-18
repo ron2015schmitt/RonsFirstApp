@@ -56,7 +56,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     // testing ROOM DB
     private TextView mUserName;
     private EditText mUserNameInput;
-    private Button mGoButton;
+    private Button mSetUserButton;
+    private Button mDeleteAllButton;
 
 
 
@@ -110,10 +111,14 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         // ROOM testing components
         mUserName = findViewById(R.id.user_name);
         mUserNameInput = findViewById(R.id.user_name_input);
-        mGoButton = findViewById(R.id.goButton);
+        mSetUserButton = findViewById(R.id.setUserButton);
+        mSetUserButton.setOnClickListener(v -> updateUserName());
+        mSetUserButton.setEnabled(true);
 
-        mGoButton.setOnClickListener(v -> updateUserName());
-        mGoButton.setEnabled(true);
+        mDeleteAllButton = findViewById(R.id.deleteAllButton);
+        mDeleteAllButton.setOnClickListener(v -> deleteAllUsers());
+        mDeleteAllButton.setEnabled(true);
+
 
         // TODO: remove these
         CurrentConditionsAndTemp.tempF = 77;
@@ -333,19 +338,35 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
 
 
+    public void deleteAllUsers() {
+        Log.println(Log.INFO,TAG, "DeleteAllUsersButton click");
+        // Disable the update button until the user name update has been done
+        mDeleteAllButton.setEnabled(false);
+        // Subscribe to updating the user name.
+        // Re-enable the button once the user name has been updated
+        mDisposable.add(mViewModel.deleteAllUsers()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(() -> mDeleteAllButton.setEnabled(true),
+                        throwable -> Log.e(TAG, "Unable to delet all users", throwable)));
+    }
+
+
     public void updateUserName() {
         String userName = mUserNameInput.getText().toString();
-        Log.println(Log.INFO,TAG, "Button click username="+userName);
+        Log.println(Log.INFO,TAG, "SetUserButton click username="+userName);
         // Disable the update button until the user name update has been done
-        mGoButton.setEnabled(false);
+        mSetUserButton.setEnabled(false);
         // Subscribe to updating the user name.
         // Re-enable the button once the user name has been updated
         mDisposable.add(mViewModel.updateUserName(userName)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(() -> mGoButton.setEnabled(true),
+                .subscribe(() -> mSetUserButton.setEnabled(true),
                         throwable -> Log.e(TAG, "Unable to update username", throwable)));
     }
+
+
 
     public void setAllDisplay() {
         setDisplayedLocation();
@@ -472,7 +493,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
 
     public void refreshAll(View view) {
-        mGoButton.performClick();
+        mSetUserButton.performClick();
         setInfoUpdating();
         getLocation();
         getForecast();

@@ -43,5 +43,5 @@ public interface UserDataSource {
     /**
      * Deletes all users from the data source.
      */
-    void deleteAllUsers();
+    Completable deleteAllUsers();
 }
